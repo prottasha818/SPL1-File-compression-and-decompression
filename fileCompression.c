@@ -15,6 +15,7 @@ typedef enum{
 FileType detectFileType(const char* fileName)
 {
     const char* dot=strrchr(fileName,'.');
+
     if(!dot || dot==fileName) 
     {
         return UNKNOWN_FILE;
@@ -317,7 +318,13 @@ void compressTextHuffman(const char * inputFile)
 
     printf("File compressed successfully: %s\n",compressedFile);
     printf("Original Size: %ld bytes\n",fileSize);
-    printf("Compressed Size: %d bytes\n",compressedIndex/8 + (compressedIndex%8 !=0 ? 1:0));
+
+    int compressedBytes = compressedIndex/8 + (compressedIndex % 8 != 0 ? 1 : 0);
+    printf("Compressed Size: %d bytes\n", compressedBytes);
+
+    double reduction = (1.0 - ((double)compressedBytes / (double)fileSize)) * 100.0;
+    printf("Reduction: %.2f%%\n", reduction);
+
 
     fp=fopen(compressedFile,"rb");
 
@@ -392,7 +399,9 @@ void processFile(const char* fileName)
     {
         case TEXT_FILE:
             printf("Processing text file: %s\n", fileName);
+            compressTextHuffman(fileName);
             break;
+
         default:
             printf("Unsupported file type for file: %s\n", fileName);
             break;
@@ -408,6 +417,7 @@ int main()
     printf("1. Text File Compression\n");
     printf("2. Text File Decompression\n");
     printf("Enter the filename: ");
+
     if(fgets(filename,sizeof(filename),stdin)!=NULL)
     {
         filename[strcspn(filename,"\n")]=0;
